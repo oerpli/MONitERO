@@ -1,6 +1,6 @@
 # MONitERO
 Various pgsql scripts to monitor the Monero blockchain.
-Mostly useful if you plan to create a blackball database (more on that below) or calculate some metrics concerning Monero transactions and you'ld like to use (PG)SQL for that purpose.
+Mostly useful if you plan to create a blackball database (more on that below) or calculate some metrics concerning Monero transactions and you would like to use (PG)SQL for that purpose.
 
 ## WTF is a blackball?
 Monero transactions use other inputs to hide the real inputs spent in transactions. Over the years, [several](https://arxiv.org/abs/1704.04299) [researchers](https://www.researchgate.net/publication/319071434_A_Traceability_Analysis_of_Monero%27s_Blockchain) have found, that some transaction outputs are definitely spent and therefore can be removed from rings, reducing the anonymity set of the affected transaction. 
