@@ -102,3 +102,18 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+
+
+# Python launch file: may differ depending on system. Don't commit
+python/.vscode/launch.json
+
+## PROJECT SPECIFIC IGNORES
+
+# data files - binary and huge (use pendrive instead)
+data/*
+
+csv/*.csv
+spark/metastore_db/*
+python/node_modules*
+*.vscode*
