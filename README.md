@@ -1,3 +1,6 @@
+[![DOI](https://zenodo.org/badge/136195558.svg)](https://zenodo.org/badge/latestdoi/136195558)
+
+
 # MONitERO
 Various pgsql scripts to monitor the Monero blockchain.
 Mostly useful if you plan to create a blackball database (more on that below) or calculate some metrics concerning Monero transactions and you would like to use (PG)SQL for that purpose.
