@@ -1,7 +1,7 @@
 \timing on
 -- get folderpaths defined in paths.sql
 -- \i ./paths.sql
--- \set inputfile :rootpath'matching/1E6/1e6_2.csv'''
+-- \set inputfile :datapath'matching/1E6/1e6_2.csv'''
 
 -- provide inputfile as named argument to psql
 -- psql -f 0_match.sql -v inputfile="whatever.csv"

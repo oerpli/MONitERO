@@ -4,8 +4,8 @@
 \set init_update init
 
 
-\set inputfile :rootpath:foldername'/inputs.csv'''
-\set outputfile :rootpath:foldername'/outputs.csv'''
+\set inputfile :datapath:foldername'/inputs.csv'''
+\set outputfile :datapath:foldername'/outputs.csv'''
 
 \echo '>>Importing modules:'
 CREATE EXTENSION intarray;

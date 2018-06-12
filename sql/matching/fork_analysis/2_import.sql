@@ -5,8 +5,8 @@
 -- -- Set foldername (should be a number in most cases)
 -- \set number 150000
 -- -- Don't touch things below here
-\set inputfile :rootpath:fork_folder'inputs.csv'''
-\set outputfile :rootpath:fork_folder'outputs.csv'''
+\set inputfile :datapath:fork_folder'inputs.csv'''
+\set outputfile :datapath:fork_folder'outputs.csv'''
 
 -- Importing
 \echo '\n'

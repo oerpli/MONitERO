@@ -21,9 +21,9 @@ CREATE TABLE :name AS (
 COMMENT ON TABLE :name IS 'Query: TXO pubkeys that occur multiple times (should not happen)';
 
 --! Save to csv just in case
-\set file :outfolder:init_update:name'.csv'''
+\set file :outfolder:name'.csv'''
 COPY :name TO :file CSV HEADER;
-\set file :outfolder:init_update:name'_full.csv'''
+\set file :outfolder:name'_full.csv'''
 COPY (SELECT time,block,txhash,pubk FROM tx JOIN txout USING (txid) JOIN reused_pubk USING (pubk) ORDER BY count DESC,block ASC) TO  :file CSV HEADER;
 
 ----! If foreign key in ring table does not have cascade, first run this:
