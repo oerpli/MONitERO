@@ -36,8 +36,7 @@ CREATE OR REPLACE FUNCTION array_max(anyarray)
 	RETURNS anyelement LANGUAGE SQL AS $$
 	SELECT max(x) FROM unnest($1) as x;
 	$$;
-LANGUAGE plpgsql immutable;
-
+	
 CREATE OR REPLACE FUNCTION txi(input_id INTEGER) 
 RETURNS TABLE(
 	txid INTEGER,

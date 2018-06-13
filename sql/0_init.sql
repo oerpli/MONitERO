@@ -26,10 +26,12 @@ CREATE EXTENSION tablefunc;
 -- This step is needed at this point
 \echo '>>Cleaning: Reused Pubkeys'
 \i ./data_insertion/4_drop_reused_pubk.sql
--- Then stuff follows
-\i ./data_insertion/:init_update/5_modify_tables.sql -- update version only runs REFRESH MATERIALIZED VIEW (may be unnecessary due to refresh on commit?)
+
+-- update version of modify_tables only runs REFRESH MATERIALIZED VIEW (may be unnecessary due to refresh on commit?)
+\i ./data_insertion/:init_update/5_modify_tables.sql
 \i ./data_insertion/6_consistency_checks.sql
 \i ./data_insertion/:init_update/7_functions.sql
 
 
-\i ./q_run_all.sql
+\echo "Finished setup, now run matching algorithm"
+-- \i ./q_run_all.sql
