@@ -42,8 +42,9 @@ These do not take arguments, as it is assumed, that they contain way less data a
 
 ### Importing the blockchain export
 In `paths.sql` you have to provide some paths to where things are located on your PC (must be absolute paths as postgres prefers those over relative paths).
-For incremental insertions `update` should be used.
+
 After you've done this, you can start the whole procedure, by calling `psql -f 0_init.sql`. This could take some time, as it calls various scripts in the `data_insertion[/init]` folder (table creation etc) and inserts data and normalizes it.
+
 If you already have a database in place which you would like to extend with a new export (e.g. you have block 0-1000 in the DB and now your new export, covering blocks 1000-2000 is in the `./data/1000-2000`) set the variables in `paths.sql` accordingly and run `0_update.sql` instead of `0_init.sql`.
 
 After this step the database is more or less a copy of the blockchain, which you usually want to analyse now.
@@ -67,12 +68,17 @@ What it does is the following:
 * Repeat both steps until convergence. This is done in a very primitive way: The powershell script redirects the outputs from `psql -f <File>` to `log.txt` and reads the last few lines after each step to check for `UPDATE 0` or similar. I wasn't aiming for a Turing award with this (though I would still accept it, if you're offering). 
 
 #### Cross Chain Analysis
-These steps assume that you want to analyse MoneroV and Monero Original, though all scripts can be easily adapted for additional forks.
+If you want to  analyse MoneroV and Monero Original, scripts are already provided.
+If you are interested in other forks, the scripts can be easily adapted.
+
 For this purpose you should have the `<fork>_data` folders in `./data`, each with the inputs/outputs CSV file, where `<fork>` is the abbreviation of the fork, e.g. `xmv` or `xmo`.
+
 Then head to the `./sql/matching/fork_analysis` folder and look if the file `defs_<fork>.sql` already exists. If not, copy one of the existing defs-files and follow the guidelines in the first few lines on how to adapt it for your fork of choice. 
 
-Then open `0_run_fork_analysis.sql` and add the fork-height of <fork> to the function, should be something like this `WHEN lower($1) = 'xmo' THEN height := 1546000;`.
-Then run the script, but you have to provide the correct `defs_<fork>.sql` file as an argument, i.e.:
+Open `0_run_fork_analysis.sql` and add the fork-height of <fork> to the function, something like `WHEN lower($1) = 'xmo' THEN height := 1546000;`.
+
+Then run the script. For this, you have to provide the correct `defs_<fork>.sql` file as an argument, i.e.:
+
 ```
 # For <fork>
 psql -f 0_run_fork_analysis.sql -v currency=defs_<fork>.sql
@@ -80,6 +86,16 @@ psql -f 0_run_fork_analysis.sql -v currency=defs_<fork>.sql
 psql -f 0_run_fork_analysis.sql -v currency=defs_xmv.sql
 ```
 
+Wait some time until it's done. After it is finished, you could run Zero Mixin Removal algorithm again and see if some new inputs can be deduced. 
+
+#### Output Merging
+I would not recommend using this heuristic. If you want to use it, figure out how to do it.
+(It will lead to false positives most likely)
+
+
+### Other things
+You can run any queries that interest you on the database. I won't even judge your rusty SQL skills.
+In the `./sql/queries` folder a few queries can be found which I found interesting at some point. You can look there for some inspiration.   
 
 ## How is this project organized
 It consists of several ± independent parts, organized in the following folders:
