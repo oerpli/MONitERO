@@ -12,7 +12,7 @@ DECLARE
 	height INTEGER;
 BEGIN
 	CASE
-		WHEN lower($1) = 'xmv' THEN height := 1564965;
+		WHEN lower($1) = 'xmv' THEN height := 1564966;
 		WHEN lower($1) = 'xmo' THEN height := 1546000;
 		-- WHEN lower($1) = 'new' THEN height := 1234;
 		----! ADD ADDITIONAL CURRENCIES AS IN LINES ABOVE
