@@ -8,7 +8,10 @@
 \set outputfile :datapath:foldername'/outputs.csv'''
 
 \echo '>>Importing modules:'
+DROP EXTENSION IF EXISTS intarray;
+DROP EXTENSION IF EXISTS tablefunc;
 CREATE EXTENSION intarray;
+CREATE EXTENSION tablefunc;
 
 \echo '>>Reading from files:'
 \echo :inputfile

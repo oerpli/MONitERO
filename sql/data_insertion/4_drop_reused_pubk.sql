@@ -2,7 +2,6 @@
 -- This is bad. Therefore only the oldest occurrence of each pubk is allowed in the db (oldest = in first block/with lowest outid if in same block/tx)
 \timing on
 -- Not sure if path relative to current file or to caller file (in ../) - just do both and let one throw an error
-\echo 'The next error is expected behavior'
 \i ./paths.sql
 \i ../paths.sql
 \set name reused_pubk

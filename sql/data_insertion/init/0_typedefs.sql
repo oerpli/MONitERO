@@ -1,7 +1,7 @@
 -- TX input consists of ring, ring members are either real or mixin, though for some of them status is not yet known
 -- Could be modelled by boolean (true,false, null) more efficiently, but maybe more confusing.
 -- Thus this user-defined type and its cast from bool function:
-DROP TYPE IF EXISTS input_type;
+DROP TYPE IF EXISTS input_type CASCADE;
 CREATE TYPE input_type AS ENUM ('real', 'mixin','unknown','spent');
 
 -- as there are only 3 values for bool but 4 values for input_type, spent does not have a mapping to bool. it's between real and mixin.
