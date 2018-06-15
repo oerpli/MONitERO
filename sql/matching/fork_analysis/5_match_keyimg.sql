@@ -56,6 +56,21 @@ SET matched = 'real'
 FROM (select inid, unnest(common) as outid from :matches where #common = 1) as k
 WHERE r.inid = k.inid and r.outid= k.outid;
 
+\echo '>>>>Set mixin in ring-table'
+update ring r
+set matched = 'mixin'
+from :matches m
+where r.inid = m.inid
+and not (idx(common,r.outid) > 0); -- checks if outid is not in common 
+
+\echo '>>>>Set mixin in ring-table'
+update :ring r
+set matched = 'mixin'
+from :matches m
+where r.:inid = m.:inid
+and not (legacy and idx(common,r.outid) > 0); -- checks if outid is not in common 
+
+
 \echo '>>>>Update other occurrences of spent output to mixin in ring-table'
 UPDATE ring r
 SET matched = 'mixin'
@@ -72,4 +87,4 @@ WHERE r.:inid = k.:inid and r.outid= k.outid;
 UPDATE :ring r
 SET matched = 'mixin'
 FROM (select :inid, unnest(common) as outid from :matches where #common = 1) as k
-WHERE r.:inid <> k.:inid and r.outid= k.outid;
+WHERE r.:inid <> k.:inid and r.outid = k.outid;

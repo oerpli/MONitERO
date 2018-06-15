@@ -47,6 +47,8 @@ FROM :txin natural join
 	ORDER BY :inid asc
 ) as a;
 
+\i ./6_propagate_info.sql
+REFRESH MATERIALIZED VIEW :txi;
 
 ---- If only matches in main-currency are relevant, tables created in this step can be dropped again
--- \i ./6_drop_fork_tables.sql
+-- \i ./9_drop_fork_tables.sql
