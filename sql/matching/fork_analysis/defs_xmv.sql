@@ -17,6 +17,7 @@
 \set tx xmv_tx
 \set txout xmv_txout
 \set txin xmv_txin
+\set txi xmv_txi
 \set ring xmv_ring
 \set inid xmv_inid
 \set outid xmv_outid
