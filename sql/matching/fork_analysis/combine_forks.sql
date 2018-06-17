@@ -31,89 +31,60 @@
 
 
 \echo '>> Finding matching keyimgs that exist in both forks'
-\set fork_folder 'xmo_data/'
-\set oq_curr '''(xmo)'
-\set ocurr '''xmo'''
-\set otx xmo_tx
-\set otxout xmo_txout
-\set otxin xmo_txin
-\set otxi xmo_txi
-\set oring xmo_ring
-\set oinid xmo_inid
-\set ooutid xmo_outid
-\set okeyimg xmo_keyimg
-\set omatches xmo_matches
-\set oinputs xmo_inputs
-\set ooutputs xmo_outputs
 
+-- Set variables to first fork
+\set txin1 xmo_txin
+\set txi1 xmo_txi
+\set ring1 xmo_ring
+\set inid1 xmo_inid
 
-\set vq_curr '''(xmv)'
-\set vcurr '''xmv'''
-\set vtx xmv_tx
-\set vtxout xmv_txout
-\set vtxin xmv_txin
-\set vtxi xmv_txi
-\set vring xmv_ring
-\set vinid xmv_inid
-\set voutid xmv_outid
-\set vkeyimg xmv_keyimg
-\set vmatches xmv_matches
-\set vinputs xmv_inputs
-\set voutputs xmv_outputs
+-- Variables for second fork
+\set txin2 xmv_txin
+\set txi2 xmv_txi
+\set ring2 xmv_ring
+\set inid2 xmv_inid
 
-
-\set fork_folder 'xmo_data/'
-\set q_curr '''(xmov)'
-\set curr '''xmov'''
-\set tx xmov_tx
-\set txout xmov_txout
-\set txin xmov_txin
-\set ring xmov_ring
-\set inid xmov_inid
-\set outid xmov_outid
-\set keyimg xmov_keyimg
+-- Names for tables combining infos from both
 \set matches xmov_matches
-\set inputs xmov_inputs
-\set outputs xmov_outputs
-
+\set keyimg xmov_keyimg
 
 
 DROP MATERIALIZED VIEW IF EXISTS :keyimg;
 CREATE MATERIALIZED VIEW :keyimg AS
-SELECT :oinid, :vinid, keyimg FROM :otxin join :vtxin using (keyimg);
+SELECT :inid1, :inid2, keyimg FROM :txin1 join :txin2 using (keyimg);
 
 \echo '>> Looking at common inputs from matching keyimg-TXIs'
 DROP TABLE IF EXISTS :matches;
 CREATE TABLE :matches AS 
 WITH in_xmo as (
-select keyimg, :oinid
-	, array_remove(array_agg(outid order by outid), NULL) as ooutid
+select keyimg, :inid1
+	, array_remove(array_agg(outid order by outid), NULL) as outidA
 	from :keyimg
-	join :oring using (:oinid)
+	join :ring1 using (:inid1)
 	group by 1,2
 ), in_xmv as(
-select keyimg,:vinid
-	, array_remove(array_agg(outid order by outid), NULL) as voutid
+select keyimg,:inid2
+	, array_remove(array_agg(outid order by outid), NULL) as outidB
 	from :keyimg
-	join :vring r using (:vinid)
+	join :ring2 r using (:inid2)
 	group by 1,2
 )
-SELECT :oinid, :vinid, (ooutid & voutid) as common
+SELECT :inid1, :inid2, (outidA & outidB) as common
 FROM in_xmo join in_xmv using (keyimg);
 
-select :oinid, :otxi.effective_ringsize as oer, :vinid, :vtxi.effective_ringsize as ver, #common
-from :matches join :otxi using(:oinid) join :vtxi using(:vinid);
+select :inid1, :txi1.effective_ringsize as erA, :inid2, :txi2.effective_ringsize as erB, #common
+from :matches join :txi1 using(:inid1) join :txi2 using(:inid2);
 
-update :oring r
+update :ring1 r
 set matched = 'mixin'
 from :matches m
-where r.:oinid = m.:oinid
+where r.:inid1 = m.:inid1
 and not (legacy and idx(common,r.outid) > 0); -- checks if outid is not in common 
 
-update :vring r
+update :ring2 r
 set matched = 'mixin'
 from :matches m
-where r.:vinid = m.:vinid
+where r.:inid2 = m.:inid2
 and not (legacy and idx(common,r.outid) > 0); -- checks if outid is not in common 
 
 
