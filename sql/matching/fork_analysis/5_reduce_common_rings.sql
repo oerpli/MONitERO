@@ -17,7 +17,7 @@ with info_table as(
             from :txin2
             join :txin1 using(keyimg)
             join :ring1 using(:inid1)
-            where matched <> 'mixin'
+            where matched <> 'mixin' and :ring1.outid is not null
             group by 1,2
         ) as a
     join
@@ -25,7 +25,7 @@ with info_table as(
             from :txin1
             join :txin2 using(keyimg)
             join :ring2 using(:inid2)
-            where matched <> 'mixin'
+            where matched <> 'mixin' and :ring2.outid is not null
             group by 1,2
         ) as b
     using (keyimg)

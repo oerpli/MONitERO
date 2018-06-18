@@ -2,10 +2,10 @@
 -- Import both fork datasets
 -- Import XMV data
 \set currency defs_xmv.sql
-\i 0_import_fork_tables.sql
+\i 0_import_fork.sql
 -- Import XMO data
 \set currency defs_xmo.sql
-\i 0_import_fork_tables.sql
+\i 0_import_fork.sql
 
 
 -- Now for each pair, do pairwise analysis
