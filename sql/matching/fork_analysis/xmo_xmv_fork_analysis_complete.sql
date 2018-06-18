@@ -1,9 +1,9 @@
--- Run XMV analysis, import data etc
+-- Import XMV data
 \set currency defs_xmv.sql
-\i 0_run_fork_analysis.sql
--- Run XMO analysis, import data etc
+\i 0_import_fork_tables.sql
+-- Import XMO data
 \set currency defs_xmo.sql
-\i 0_run_fork_analysis.sql
+\i 0_import_fork_tables.sql
 
 -- Run combination analysis of XMV and XMO
 \i combine_forks.sql

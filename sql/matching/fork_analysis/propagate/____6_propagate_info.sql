@@ -1,19 +1,23 @@
 with matched_xmr as (
-	select :inid, outid from :txi join txi using(keyimg) join ring using (inid) where matched = 'real'
+	select :inid, outid
+	from :txi
+	join txi using(keyimg)
+	join ring using (inid)
+	where matched = 'real'
 ), u1 as (
 update :ring r
-set matched = 'real'
-from matched_xmr x
-where r.:inid = x.:inid
-and r.outid = x.outid
-and legacy
-returning 1
+	set matched = 'real'
+	from matched_xmr x
+	where r.:inid = x.:inid
+	and r.outid = x.outid
+	and legacy
+	returning 1
 )
 update :ring r
-set matched = 'mixin'
-from matched_xmr x
-where r.:inid = x.:inid
-and r.outid <> x.outid;
+	set matched = 'mixin'
+	from matched_xmr x
+	where r.:inid = x.:inid
+	and r.outid <> x.outid;
 
 -- Update ring members in fork ring-table. 
 -- Caution: Legacy and non-legacy (post-fork-outputs) have to be handled differently

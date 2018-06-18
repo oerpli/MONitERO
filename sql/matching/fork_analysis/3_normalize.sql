@@ -96,7 +96,28 @@ INSERT INTO :ring(:inid,outid, legacy)
 	JOIN txout o on i.ref_output_pubk = o.pubk;
 -- CREATE UNIQUE INDEX xmv_index_ring ON xmv_ring (inidv, outidv, outid);
 
+
+
+DROP MATERIALIZED VIEW IF EXISTS :txi;
+CREATE MATERIALIZED VIEW :txi AS
+SELECT :inid,txid,keyimg, ringsize, effective_ringsize
+FROM :txin natural join
+(	SELECT :inid
+	,	count(*) as ringsize
+	,	count(case
+				when matched <> 'mixin' then 1 -- This should be somewhat faster
+				-- when matched = 'unknown' then 1
+				-- when matched = 'real' then 1
+				-- when matched = 'spent' then 1
+			end) as effective_ringsize
+	FROM :ring
+	GROUP BY :inid
+	ORDER BY :inid asc
+) as a;
+
+
 COMMENT ON TABLE :tx IS    :q_curr: All TXs (including cb) and their metadata'; --'
 COMMENT ON TABLE :txout IS :q_curr: Outputs associated with TXs'; --'
 COMMENT ON TABLE :txin IS  :q_curr: Inputs associated with TXs'; --'
 COMMENT ON TABLE :ring IS  :q_curr: All outputs (outid) referenced in TX inputs (inid). A set of outputs is called a ring'; --'
+COMMENT ON MATERIALIZED VIEW :txi IS :q_curr: Inputs and their (effective) ringsizes'; --'

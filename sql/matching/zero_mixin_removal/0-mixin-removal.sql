@@ -1,15 +1,15 @@
 \timing on
 with matchable as (
 	select inid from ring
-	where undecided(matched) -- function that maps all possible enum values to their decidedstatus
+	where matched <> 'mixin' -- these are not real for sure
 	group by inid
-	having count(*) = 1 -- this makes sure only one possible match in next CTE
+	having count(*) = 1 -- only those with 1 possible input left
 ), new_real as (
 	update ring
 	set matched = 'real'
 	from matchable
 	where matchable.inid = ring.inid
-	and undecided(matched) -- only applies once, due to match with prev. table
+	and undecided(matched) -- does not update rows that are already 'real' or 'mixin'
 	returning outid
 )
 update ring
