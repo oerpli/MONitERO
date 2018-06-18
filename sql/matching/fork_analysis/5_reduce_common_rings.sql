@@ -1,3 +1,4 @@
+-- Before calling this somewhere, "one" and "two" each must be set to ./def_<FORK>.sql
 -- First creates info_table, which contains the intersection of 
 --   all rings with common key image from both forks,
 --   as long as the rings are not identical on both chains.
@@ -7,6 +8,8 @@
 -- inid1/inid2 - name of inid column
 -- txin1/txin2 - name of txin table
 -- ring1/ring2 - name of ring table
+-- To make this easier, define variables "one" and "two", which are then combined in defs_XY.sql 
+\i ./defs_XY.sql
 
 with info_table as(
     select :inid1,:inid2, (one & two) as common from 
@@ -33,8 +36,10 @@ with info_table as(
     from info_table i
     where i.:inid1 = r.:inid1
     and r.matched = 'unknown'
-    and outid is not null
-    and idx(common, r.outid) > 0
+    and (
+        r.outid IS NULL -- this only happens if its an output not on the other chains. must be mixin as keyimg is shared with other chains
+        OR
+        idx(common, r.outid) > 0)
     returning 0
 )
     update :ring2 r
@@ -42,6 +47,8 @@ with info_table as(
     from info_table i
     where i.:inid2 = r.:inid2
     and r.matched = 'unknown'
-    and outid is not null
-    and idx(common, r.outid) > 0
+    and (
+        r.outid IS NULL -- this only happens if its an output not on the other chains. must be mixin as keyimg is shared with other chains
+        OR
+        idx(common, r.outid) > 0)
 ;

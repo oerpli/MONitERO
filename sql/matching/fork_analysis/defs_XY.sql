@@ -1,5 +1,3 @@
-\set one ../defs_xmv.sql
-\set two ../defs_xmo.sql
 -- Variables for first chain
 \i :one
 \set txin1 :txin

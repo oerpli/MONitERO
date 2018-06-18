@@ -33,11 +33,13 @@ Several methods to match outputs to the transactions where they are used can be 
     * If an input (ring) has only one output with undetermined status, the output is set to `real` for the input in question. Every other reference to the output in question is marked as `mixin`. Iterated until convergence
     * Look for identical rings of size n that appear n times. All members have to be spent. Set to `spent` and all other references to `mixin`
     * Iterate both steps until convergence
-* Fork Analysis: If there is a hardfork of Monero, some key images may occur on both blockchains (fork & XMR). This can be exploited to identify the real output being spent in the transaction. Use as follows:
-    * Export forked blockchains starting from fork block to some folder, e.g. `<CURRENCY>_data` (there are scripts for thsi in the `tx_exporter` folder)
-    * If there is no definition file for the <CURRENCY>, copy the `defs_xmo.sql` file and rename it to `defs_<CURRENCY>.sql` and update the variables as specified in the comments there
-    * Add the fork height of <CURRENCY> in the function definition in `0_run_fork_analysis.sql`
-    * Save all files and run `psql -f 0_run_fork_analysis.sql -v currency=defs_<CURRENCY>.sql`
+* Fork Analysis: If there is a hardfork of Monero, some key images may occur on multiple blockchains (e.g. fork & XMR). This can be exploited to identify the real output being spent in the transaction. Use as follows:
+    * Export forked blockchains starting from `<fork block>` to some folder, e.g. `<CURRENCY>_data` (there are scripts for this in the `tx_exporter` folder)
+    * If you want to analyze XMR, XMV and XMO, skip these steps:
+        * If there is no definition file for the `<CURRENCY>`, copy the `defs_xmo.sql` file and rename it to `defs_<CURRENCY>.sql` and update the variables as specified in the comments there
+        * Add the fork height of <CURRENCY> in the function definition in `0_import_fork.sql` (this file can be run separately via `psql -f 0_import_fork.sql -v currency=defs_<CURRENCY>.sql`, if you want to skip the whole analysis for the time being)
+        * Modify `fork_analysis.sql` to include the additional currency, then save all files
+    * Run `psql -f fork_analysis.sql`
 * Output Merging:
     * If a transaction references two different outputs of previous transactions in two rings, it can often be assumed, that these two outputs are the real inputs of that transaction.
 * ~~CSV Import~~: [Deprecated]
@@ -54,7 +56,7 @@ Outline of the organization of the bits and pieces in this folder:
 * `data_insertion`: Takes raw data from csv-export and either appends to existing db (if csv-export contains data starting from some block > 0) or creates a new one.
 * `queries`: Queries that are mostly called in `q_run_all.sql` - creation of views/tables of some properties of interest. In this folder is a template that should be used to create additional queries.
 * `matching/zero_mixin_removal`: To link monero outputs to the tx where it is used, several heuristics are applied. This folder contains SQL implementations of these algorithms, look in the folder on how to use them 
-* `matching/fork_analysis`: Reads data from the MoneroV blockchain and tries to use information from there to improve the XMR-linking. 
+* `matching/fork_analysis`: Reads data from the XMV and XMO blockchains and tries to use information from there to improve the XMR-linking. 
 * `matching/output_merging`: Link TXs that merge outputs from previous transaction (nondeterministic, => seperate link column)
 * `matching/csv_import`: If the linking is done via external methods, here are scripts that import the csv-output to the DB. [Deprecated]
 * `meta`: Queries that output relations and indexes on the DB. Can be used to check how the different tables interact with each other. 
