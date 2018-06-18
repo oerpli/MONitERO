@@ -26,7 +26,7 @@ CREATE TABLE txout
 ,	txid INTEGER REFERENCES tx(txid) ON DELETE CASCADE
 ,	out_index INTEGER -- number of output in tx
 ,	amount DECIMAL
-,	pubk VARCHAR
+,	pubk VARCHAR NOT NULL
 );
 
 DROP TABLE IF EXISTS ring CASCADE;
@@ -36,6 +36,7 @@ CREATE TABLE ring
 ,	matched INPUT_TYPE NOT NULL DEFAULT 'unknown'
 ,	matched_merge INPUT_TYPE -- matched acc. to merge heuristic
 ,	matched_newest INPUT_TYPE -- matched acc. to newest input heuristic
+,	primary key(inid,outid)
 );
 
 \echo '\n'
@@ -87,7 +88,7 @@ INSERT INTO ring(inid,outid)
 	JOIN txin t on i.key_image = t.keyimg -- get correct ring (= inid = input_id)
 	JOIN txout o on i.ref_output_pubk = o.pubk;
 -- dont analyze this alone because of next step
-CREATE UNIQUE INDEX index_ring ON ring (inid, outid);
+-- CREATE UNIQUE INDEX index_ring ON ring (inid, outid);
 CREATE INDEX index_ring_in2 ON ring (inid);
 CREATE INDEX index_ring_in ON ring USING HASH (inid);
 CREATE INDEX index_ring_out ON ring USING HASH (outid);
