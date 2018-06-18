@@ -17,11 +17,14 @@
 \set one :xmv
 \set two :xmo
 \i ./4_remove_fork_inputs.sql
-\set one :xmr
+\set one :xmo
 \set two :xmv
 \i ./4_remove_fork_inputs.sql
-\set one :xmr
-\set two :xmo
+\set one :xmv
+\set two :xmr
+\i ./4_remove_fork_inputs.sql
+\set one :xmo
+\set two :xmr
 \i ./4_remove_fork_inputs.sql
 -- (XMV, XMO)
 \set one :xmv
