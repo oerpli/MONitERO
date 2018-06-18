@@ -9,10 +9,20 @@
 
 
 -- Now for each pair, do pairwise analysis
-
 \set xmo ./defs_xmo.sql
 \set xmv ./defs_xmv.sql
 \set xmr ./defs_xmr.sql
+
+-- Remove new outputs from rings with matching keyimg:
+\set one :xmv
+\set two :xmo
+\i ./4_remove_fork_inputs.sql
+\set one :xmr
+\set two :xmv
+\i ./4_remove_fork_inputs.sql
+\set one :xmr
+\set two :xmo
+\i ./4_remove_fork_inputs.sql
 -- (XMV, XMO)
 \set one :xmv
 \set two :xmo

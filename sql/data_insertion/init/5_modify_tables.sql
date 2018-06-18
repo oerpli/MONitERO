@@ -1,6 +1,5 @@
 \timing on
--- Modify tables for easier queries. 
--- May lead to denormalization
+-- Create views to store ringsize and effective ringsize
 
 CREATE MATERIALIZED VIEW txi AS
 SELECT inid,txid,keyimg, ringsize, effective_ringsize
