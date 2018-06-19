@@ -30,6 +30,7 @@ with info_table as(
         ) as b
     using (keyimg)
     where one<>two
+    -- and #(one & two) > 0
 ), r1 as (
     update :ring1 r
     set matched = 'mixin'
@@ -39,7 +40,7 @@ with info_table as(
     and (
         r.outid IS NULL -- this only happens if its an output not on the other chains. must be mixin as keyimg is shared with other chains
         OR
-        idx(common, r.outid) > 0)
+        idx(common, r.outid) = 0)
     returning 0
 )
     update :ring2 r
@@ -50,5 +51,5 @@ with info_table as(
     and (
         r.outid IS NULL -- this only happens if its an output not on the other chains. must be mixin as keyimg is shared with other chains
         OR
-        idx(common, r.outid) > 0)
+        idx(common, r.outid) = 0)
 ;

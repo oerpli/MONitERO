@@ -13,9 +13,10 @@
 
 with info_table as(
     select :inid1, :inid2 from :txin1 join :txin2 using(keyimg)
-    )
+)
 update :ring1 r
     set matched = 'mixin'
     from info_table i
     where i.:inid1 = r.:inid1
+    and matched ='unknown'
     and r.outid IS NULL;
