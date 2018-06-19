@@ -10,11 +10,11 @@
 
 
 with xmr_rings as
-	(select keyimg, array_agg(outid) as outs from ring natural join txi where matched = 'unknown' group by 1)
+	(select keyimg, array_agg(outid) as outs from ring natural join txi where matched <> 'mixin' group by 1)
 ,	 xmv_rings as
-	(select keyimg, array_agg(coalesce(outid,-xmv_outid)) as outs from xmv_ring natural join xmv_txi where matched = 'unknown' group by 1)
+	(select keyimg, array_agg(coalesce(outid,-xmv_outid)) as outs from xmv_ring natural join xmv_txi where matched <> 'mixin' group by 1)
 ,	 xmo_rings as
-	(select keyimg, array_agg(coalesce(outid,-xmo_outid)) as outs from xmo_ring natural join xmo_txi  where matched = 'unknown' group by 1)
+	(select keyimg, array_agg(coalesce(outid,-xmo_outid)) as outs from xmo_ring natural join xmo_txi  where matched <> 'mixin' group by 1)
 select array_agg(keyimg) as keyimgs, outs
 from xmr_rings
 join xmv_ring using(outs)
@@ -22,15 +22,22 @@ join xmo_ring using(outs)
 group by 
 
 
+
+\timing on
+drop table if exists ccir;
+create table ccir as
 select array_agg(chain) as chains, outs, array_agg(keyimg) as keyimgs
 from (
 	(select 1 as chain, keyimg, array_agg(outid) as outs from ring natural join txi
-	where matched = 'unknown' group by 1,2)
+	where undecided(matched) group by 1,2)
 	union
 	(select 2 as chain, keyimg, array_agg(coalesce(outid,-xmv_outid)) as outs from xmv_ring natural join xmv_txi
-	where matched = 'unknown' group by 1,2)
+	where undecided(matched) group by 1,2)
 	union
 	(select 3 as chain, keyimg, array_agg(coalesce(outid,-xmo_outid)) as outs from xmo_ring natural join xmo_txi
-	where matched = 'unknown' group by 1,2)
+	where undecided(matched) group by 1,2)
 ) as a
 group by outs having count(distinct keyimg) = #outs;
+
+
+ select * from ccir where #uniq(chains) > 1;

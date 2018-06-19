@@ -29,7 +29,9 @@ select inid,outid from
 update ring r 
   set matched = 'spent'
   from ringrows as rr
-  where r.inid = rr.inid and r.outid = rr.outid;
+  where r.inid = rr.inid
+  and r.outid = rr.outid
+  and matched = 'unknown';
 
 with spent_txos as (
 	select unnest(outids) as outid from spent_sets
