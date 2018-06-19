@@ -2,7 +2,7 @@ $count = 0
 $logfile = '.\log.txt'
 $mixin_removal = '.\0-mixin-removal.sql'
 $spent_sets = '.\spent_sets.sql'
-$update_views = '..\data_insertion\update\5_modify_tables.sql'
+$update_views = '..\..\data_insertion\update\5_modify_tables.sql'
 echo "Start" > $logfile
 get-time >> $logfile
 
@@ -25,5 +25,5 @@ do {
 echo $count >> $logfile
 get-time >> $logfile
 
-echo "Updating materialized views to make sure everything is fine, tidy and consistent"
+echo "You should now update materialized views and query tables to make sure everything is consistent"
 psql -f $update_views >> $logfile
