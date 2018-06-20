@@ -4,6 +4,7 @@
 
 
 DROP TABLE IF EXISTS :name;
+CREATE TABLE :name AS (
 WITH new_inputs AS (
 	select inid
 		from txi
@@ -16,16 +17,17 @@ WITH new_inputs AS (
 		from new_inputs
 		join ring using (inid)
 		join txout using (outid)
-		group by 1 order by 1;
+		join tx using (txid)
+		group by 1 order by 1
 ), correct_txo AS (
 	select inid, time as time_spent
 		from new_inputs
 		join ring using(inid)
 		join txout using (outid)
+		join tx using (txid)
 		where matched ='real'
 		order by 1
 )
-CREATE TABLE :name AS (
 	select inid, time_spent, time_spent = newest as valid, times
 	from all_txos join correct_txo using (inid)
 );
