@@ -15,20 +15,22 @@
 
 -- Remove new outputs from rings with matching keyimg:
 \echo ">> Removing fork inputs from shared keyimg TXs"
+-- :one is always the currency, where the inputs are removed.
+-- only applies to forks, main chain should not be touched. 
 \set one :xmv
 \set two :xmo
 \i ./4_remove_fork_inputs.sql
+\set two :xmr
+\i ./4_remove_fork_inputs.sql
+
 \set one :xmo
 \set two :xmv
 \i ./4_remove_fork_inputs.sql
-\set one :xmv
-\set two :xmr
-\i ./4_remove_fork_inputs.sql
-\set one :xmo
 \set two :xmr
 \i ./4_remove_fork_inputs.sql
 
 \echo ">> Reduce rings with shared keyimg to their intersection"
+-- This updates both rings at once, so only call once for each (unordered) pair of currencies.
 -- (XMV, XMO)
 \set one :xmv
 \set two :xmo
