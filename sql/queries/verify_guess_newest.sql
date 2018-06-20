@@ -13,7 +13,7 @@ WITH new_inputs AS (
 		and effective_ringsize = 1  -- that are traced/linked
 		and ringsize > 1 -- and were nontrivial
 ), all_txos AS (
-	select inid, max(time) as newest, array_agg(time) as times
+	select inid, max(time) as newest, array_agg(time order by time) as times
 		from new_inputs
 		join ring using (inid)
 		join txout using (outid)
