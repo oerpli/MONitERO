@@ -44,6 +44,8 @@ drop table if exists count_intersections;
 create table count_intersections as 
 select date_trunc('month', time )::date as month
 	, count(*) as total
+	-- , count(case when ringct and num_out = ringsize then 1 end)  as trivial_ringct -- nothing interesting to see here
+	-- , count(case when ringct and num_out < ringsize then 1 end) as nontrivial_ringct -- nothing interesting to see here
 	, count(case when num_out = ringsize then 1 end)  as trivial
 	, count(case when num_out < ringsize then 1 end) as nontrivial
 	-- , round(count(case when valid then 1 end)::numeric / count(*), 4) as accuracy
@@ -71,3 +73,25 @@ natural join tx
 where
     block < 1470000
     and ringsize = num_out;
+
+
+-- Investigating huge peak in September 2014 - 745 different dust outputs
+select amount,count(*)
+from (
+	select distinct outid
+	from (select unnest(ins) as inid from intersections) as a
+		join txin using (inid)
+		join tx using (txid)
+		join ring using (inid)
+	where date_trunc('month',time) = '2014-09-01') as a
+join txout using(outid)
+group by 1;
+
+
+
+select txid, count(inid)
+from (select unnest(ins) as inid from intersections) as a
+	join txin using (inid)
+	join tx using (txid)
+where date_trunc('month',time) = '2014-09-01'
+group by 1 order by 2 desc;
