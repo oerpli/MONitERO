@@ -32,13 +32,13 @@ COMMENT ON TABLE guess_newest_data IS 'Query: All identified NT rings and whethe
 
 drop table if exists :name;
 create table :name as 
-select date_trunc('month', txtime )
+select date_trunc('month', txtime )::date as month
 	, count(*) as total
 	, count(case when valid then 1 end)  as valid
 	, count(case when not valid then 1 end) as invalid
-	, round(count(case when valid then 1 end)::numeric / count(*), 4) as accurracy
+	, round(count(case when valid then 1 end)::numeric / count(*), 4) as accuracy
 from guess_newest_data
 group by 1
 order by 1 asc;
 
-COMMENT ON TABLE :name is 'Accurracy of guess newest heuristic aggregated by month';
+COMMENT ON TABLE :name is 'Query: Accurracy of guess newest heuristic aggregated by month';
