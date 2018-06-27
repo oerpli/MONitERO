@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS :name;
 CREATE TABLE :name AS (
 WITH tx_stats as (select date_trunc(:q_granularity,time)::DATE as :granularity
       , count(distinct txid) as num_tx -- #TXs
+      , count(distinct case when coinbase then txid end) as cb_tx -- #non coinbase TXs
       , count(distinct case when not coinbase then txid end) as real_tx -- #non coinbase TXs
       , count(distinct case when ringct then txid end) as ringct -- #ringct TXs
    from tx
@@ -46,9 +47,8 @@ from tx_stats
     join output_stats using(:granularity)
 order by :granularity asc
 );
-COMMENT ON TABLE :name IS 'Monthly TX stats, output and input stats exclude coinbase TXs';
+COMMENT ON TABLE :name IS 'Monthly TX stats, output and input stats exclude coinbase TXs. Details in .sql file';
 
 
-\i ./queries/:name.sql
-\set file :outfolder:name'.csv'''
-COPY :name TO :file CSV HEADER;
+-- \set file :outfolder:name'.csv'''
+-- COPY :name TO :file CSV HEADER DELIMITER E'\t';
