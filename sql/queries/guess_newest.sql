@@ -1,5 +1,6 @@
 \timing on
 \set name guess_newest
+
 -- aggregate over month/day/year/whatever?
 \set granularity month
 \set q_granularity '''' :granularity ''''
@@ -26,6 +27,11 @@ from results
 order by 1;
 
 COMMENT ON TABLE :name is 'Query: Accurracy of guess newest heuristic aggregated by month';
+
+
+-- \set file :outfolder:name'.csv'''
+-- COPY :name TO :file CSV HEADER DELIMITER E'\t';
+
 
 
 --- OLD Method, does not incorporate ringtime view and is thus ugly
