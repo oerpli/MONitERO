@@ -16,17 +16,20 @@
 drop table if exists :name;
 create table :name as 
 with newest as(
-	select inid, min(:match_criterion) as :match_criterion
+	select inid
+	, min(:match_criterion) as :match_criterion
+	, count(outid) = 1 as trivial
 	from ringtime
 	group by 1
 ), new_match as (
-	select inid, spendtime, matched
+	select inid, spendtime, matched, trivial
 	from ringtime
 	join newest using(inid, :match_criterion)
 ), results as (
 	select date_trunc(:q_granularity,spendtime)::date as :granularity
 	,	count(case when undecided(matched) then 1 end) as unknown
-	,	count(case when matched = 'real' then 1 end) as correct
+	,	count(case when matched = 'real' then 1 end) as correct_trivial
+	,	count(case when not trivial and matched = 'real' then 1 end) as correct
 	,	count(case when matched = 'mixin' then 1 end) as wrong
 	from new_match
 	group by 1
