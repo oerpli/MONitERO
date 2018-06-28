@@ -9,11 +9,13 @@
 drop table if exists :name;
 create table :name as 
 with newest as(
-	select inid, spendtime, min(age) as age from ringtime group by 1,2
+	select inid, min(age) as age
+	from ringtime
+	group by 1
 ), new_match as (
 	select inid, spendtime, matched
 	from ringtime
-	join newest using(inid, spendtime, age)
+	join newest using(inid, age)
 ), results as (
 	select date_trunc(:q_granularity,spendtime)::date as :granularity
 	,	count(case when undecided(matched) then 1 end) as unknown
