@@ -28,9 +28,8 @@ WITH it as (select
 	,	block as outheight
 	,	outid
 	from txout natural join tx)
-SELECT inid,outid, matched,spendtime-outtime as age, spendtime, spendheight-outheight as block_diff, spendheight --, outtime 
+SELECT inid,outid, matched,spendtime-outtime as age, spendheight-outheight as block_diff, spendtime, spendheight --, outtime 
 FROM ring
-	NATURAL JOIN it
-	NATURAL JOIN ot;
-
+	join it using(inid)
+	join ot using(outid);
 
