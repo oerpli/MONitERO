@@ -5,7 +5,7 @@
 Various pgsql scripts to monitor the Monero blockchain.
 Mostly useful if you plan to create a blackball database (more on that below) or calculate some metrics concerning Monero transactions and you would like to use (PG)SQL for that purpose.
 
-If you only want a blackball database, I will provide a CSV file with transactions that are currently known to be spent <somewhere>.
+If you only want a blackball database, I will provide a CSV file with transactions that are currently known to be spent <somewhere> (currently looking for a place to reliably host approx. 1-3GB uncompressable text files).
 
 ## WTF is a blackball?
 Monero transactions use other inputs to hide the real inputs spent in transactions. Over the years, [several](https://arxiv.org/abs/1704.04299) [researchers](https://www.researchgate.net/publication/319071434_A_Traceability_Analysis_of_Monero%27s_Blockchain) have found, that some transaction outputs are definitely spent and therefore can be removed from rings, reducing the anonymity set of the affected transaction. 
@@ -120,10 +120,15 @@ Some subdirectories of interest:
  * `algorithm`: Here some methods used to find spent outputs are implemented.  
 
 ### CSV
-If some scripts collect some data for later analysis, the resulting csv files should be put in this folder.
+If some scripts collect some data for later analysis, the resulting csv files will be put in this folder.
+Contains various files with statistics for various things of interest. 
 
 ### Python
 Some Python (3.6) scripts that generate plots or similar.
+These are mostly not in the repo right now as I've changed my plot-generation-pipeline. 
 
 ## Is it any good?
 Yes
+
+## I have questions/concerns/other
+You can contact me or open an issue. If you find some bug/oversight before my thesis is finished you will not only help Science™, but you may even get a mention in my acknowledgements!
