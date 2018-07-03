@@ -1,4 +1,5 @@
-[![DOI](https://zenodo.org/badge/136195558.svg)](https://zenodo.org/badge/latestdoi/136195558)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1303433.svg)](https://doi.org/10.5281/zenodo.1303433)
+
 
 
 # MONitERO
