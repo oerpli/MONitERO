@@ -9,4 +9,6 @@ Lists of outputs which should be avoided can be obtained by following the links 
 * (Probably) spent on a forked chain: [Link](#TODO)
 * At risk of being identified as spent: [Link](#TODO)
 
-These files cannot be included in the repo due to their size. 
+The queries for these files can be found here: [../sql/queries/spent_outputs.sql](https://github.com/oerpli/MONitERO/blob/master/sql/queries/spent_outputs.sql)
+
+The CSV files cannot be included in the repo due to their size. 
