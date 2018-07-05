@@ -66,7 +66,7 @@ WHERE (r.inid = inid_a and r.outid = outid_a)
 create table :name as
 with outstats as(
     select date_trunc(:q_granularity, time)::date as :granularity
-    , count(distinct txid) as count_out -- number of outputs which are later identified via OMH
+    , count(distinct txid) as count_out -- number of TXs where some outputs are later identified via OMH
     , count(case when matched = 'real' then inid end) as correct -- same result as ZMR
     , count(case when matched = 'mixin' then inid end) as wrong -- WRONG result
     , count(case when matched = 'unknown' then inid end) as unknown -- Unknown
@@ -77,7 +77,7 @@ with outstats as(
     group by 1
 ), instats as(
     select date_trunc(:q_granularity, time)::date as :granularity
-    , count(distinct txid) as count_in -- number of inputs identified via OMH
+    , count(distinct txid) as count_in -- number of TXs where some inputs are identified via OMH
     , count(case when matched = 'real' then inid end) as correct_in -- same as above???
     , count(case when matched = 'mixin' then inid end) as wrong_in -- same as above???
     , count(case when matched = 'unknown' then inid end) as unknown_in -- same as above???
