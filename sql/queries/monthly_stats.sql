@@ -27,7 +27,7 @@ WITH tx_stats as (select date_trunc(:q_granularity,time)::DATE as :granularity
       , count(case when ringsize > 1 and effective_ringsize = 1 then 1 end) as linked_nt_abs -- #Inputs(ringsize > 1) with known real (absolute)
       , round(avg(ringsize)::numeric,:fprecision) as avg_rs -- Average Ringsize
       , round(avg(effective_ringsize)::numeric,:fprecision) as avg_eff_rs -- Average Effective Ringsize
-      , round(count(case when ringsize = minringsize(block) then 1 end)::numeric/ count(distinct inid),:fprecision) as rel_min_rs -- Amount of inputs that only uses minimum possible RS
+      , round(count(case when ringsize <= minringsize(block) then 1 end)::numeric/ count(distinct inid),:fprecision) as rel_min_rs -- Amount of inputs that only uses minimum possible RS (or less, due to some old pre-RingCT outputs with denom)
     --   , round(avg(case when ringsize > minringsize(block) then ringsize - minringsize(block) -1 end),:fprecision) as avgExtraMixins -- commented out - uninteresting table
    from tx join txi using(txid)
    group by 1 order by 1 asc
