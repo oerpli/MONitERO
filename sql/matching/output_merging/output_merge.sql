@@ -1,10 +1,6 @@
 \timing on
 \set name output_merge
 
--- aggregate over month/day/year/whatever?
-\set granularity month
-\set q_granularity '''' :granularity ''''
-
 -- Materialized view "output_merge" (defined in ../../data_insertion/init/5_modify_tables.sql)
 -- Stores information of TXs that use multiple inputs from a TX in different rings.
 
@@ -57,42 +53,3 @@ WHERE (r.inid = inid_a and r.outid = outid_a)
 --         and a.txos && b.txos
 -- );
 -- COMMENT ON TABLE :name IS 'Query: TXs that reference same TX in multiple inputs'; -- PLEASE FILL OUT TO PREVENT CONFUSION
-
-
-
---TODO Add columns for accuracy and some other stuff that will probably be needed for the plotting
---TODO With precision and yadayada
-\set name merge_stats
-drop table if exists :name;
-create table :name as
-with outstats as(
-    select date_trunc(:q_granularity, time)::date as :granularity
-    , count(distinct txid) as count_out -- number of TXs where some outputs are later identified via OMH
-    , count(case when matched = 'real' then inid end) as correct_out -- same result as ZMR
-    , count(case when matched = 'mixin' then inid end) as wrong_out -- WRONG result
-    , count(case when matched = 'unknown' then inid end) as unknown_out -- Unknown
-    from tx
-     join txout using(txid)
-     join (select inid,outid,matched,matched_merge from ring join txi using(inid) where ringsize > 1) as a using(outid)
-    where matched_merge = 'real'
-    group by 1
-), instats as(
-    select date_trunc(:q_granularity, time)::date as :granularity
-    , count(distinct txid) as count_in -- number of TXs where some inputs are identified via OMH
-    , count(case when matched = 'real' then inid end) as correct_in -- different results as above. 
-    , count(case when matched = 'mixin' then inid end) as wrong_in -- different results as above. 
-    , count(case when matched = 'unknown' then inid end) as unknown_in -- different results as above. 
-    from tx
-     join txi using (txid)
-     join ring using (inid)
-    where ringsize > 1 and matched_merge = 'real'
-    group by 1
-)
-select * from outstats natural join instats order by :granularity asc;
-
-COMMENT ON TABLE :name IS 'Query: Monthly stats for accuracy of OMH';
-
-
-\set file :outfolder:name'.csv'''
-COPY :name TO :file CSV HEADER DELIMITER E'\t';
-
