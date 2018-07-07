@@ -30,9 +30,11 @@ with outstats as(
     group by 1
 )
 select * 
-    , round(correct_out::numeric / (correct_out + wrong_out),:fprecision) as accuracy_out
-    , round(correct_in::numeric / (correct_in + wrong_in),:fprecision) as accuracy_in
-    from outstats join instats using (:granularity) order by :granularity asc;
+    , round(correct_out::numeric / NULLIF(correct_out + wrong_out,0),:fprecision) as accuracy_out
+    , round(correct_in::numeric / NULLIF(correct_in + wrong_in,0),:fprecision) as accuracy_in
+from outstats
+join instats using (:granularity)
+order by :granularity asc;
 
 COMMENT ON TABLE :name IS 'Query: Monthly stats for accuracy of OMH';
 
