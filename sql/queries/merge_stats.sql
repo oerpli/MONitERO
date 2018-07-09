@@ -43,3 +43,42 @@ COMMENT ON TABLE :name IS 'Query: Monthly stats for accuracy of OMH';
 COPY :name TO :file CSV HEADER DELIMITER E'\t';
 
 
+\set name merge_ringstats
+\set file :outfolder:name'.csv'''
+
+drop table if exists :name;
+create table :name as
+select ringsize
+	, count(case when matched = 'real' then 1 end) as real
+	, count(case when matched = 'mixin'then 1 end) as mixin
+	, count(case when matched = 'unknown' then 1 end) as unknown
+	, count(case when time > '2018-01-01' and matched = 'real' then 1 end) as real_new
+	, count(case when time > '2018-01-01' and matched = 'mixin'then 1 end) as mixin_new
+	, count(case when time > '2018-01-01' and matched = 'unknown' then 1 end) as unknown_new
+--	replication of kumar et al
+	, count(case when block <= 1240503 and matched = 'real' then 1 end) as real_old
+	, count(case when block <= 1240503 and matched = 'mixin'then 1 end) as mixin_old
+	, count(case when block <= 1240503 and matched = 'unknown' then 1 end) as unknown_old
+from txi
+join ring using(inid)
+join tx using(txid)
+where ringsize < 11
+and matched_merge = 'real'
+group by 1 order by 1 asc;
+
+COPY (
+	select * -- select everything and also add relative amounts for each
+	-- relative amounts for overall real/mixin/unknown (per ringsize)
+	, round(real::numeric / nullif(real+mixin+unknown,0), :fprecision) as real_rel
+	, round(mixin::numeric / nullif(real+mixin+unknown,0), :fprecision) as mixin_rel
+	, round(unknown::numeric / nullif(real+mixin+unknown,0), :fprecision) as unknown_rel
+	-- relative amounts for new real/mixin/unknown (per ringsize)
+	, round(real_new::numeric / nullif(real_new+mixin_new+unknown_new,0), :fprecision) as real_rel_new
+	, round(mixin_new::numeric / nullif(real_new+mixin_new+unknown_new,0), :fprecision) as mixin_rel_new
+	, round(unknown_new::numeric / nullif(real_new+mixin_new+unknown_new,0), :fprecision) as unknown_rel_new
+	-- replication of their results?
+	, round(real_old::numeric / nullif(real_old+mixin_old+unknown_old,0), :fprecision) as real_rel_old
+	, round(mixin_old::numeric / nullif(real_old+mixin_old+unknown_old,0), :fprecision) as mixin_rel_old
+	, round(unknown_old::numeric / nullif(real_old+mixin_old+unknown_old,0), :fprecision) as unknown_rel_old
+from :name
+) TO :file CSV HEADER DELIMITER E'\t';
