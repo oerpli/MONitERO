@@ -21,3 +21,4 @@ CREATE TABLE :name AS (
 );
 
 COMMENT ON TABLE :name IS 'Query: Time distribution of overlapping sets'; -- PLEASE FILL OUT TO PREVENT CONFUSION
+
