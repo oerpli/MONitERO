@@ -1,4 +1,6 @@
+\i paths.sql
 \set fprecision 1
+\set name output_time_distributions
 
 drop table if exists time_distr_test;
 create table time_distr_test as
@@ -11,8 +13,6 @@ from ringtime
 group by 1,2
 order by 1,2 asc;
 
-
-\set name output_time_distributions
 drop table if exists :name;
 create table :name as 
 with total_yearly as (
@@ -74,7 +74,6 @@ select logBlockTime
 	,	coalesce(mixin_16, 0) as mixin_16
 	,	coalesce(mixin_17, 0) as mixin_17
 	,	coalesce(mixin_18, 0) as mixin_18
-	
 from total_overall
 natural join total_yearly
 natural join real_yearly

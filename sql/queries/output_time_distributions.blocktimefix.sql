@@ -1,14 +1,35 @@
+\i paths.sql
 \set fprecision 1
-\set f 1009827
-\set x spendheight
-\set y (spendheight - block_diff)
+
+\set name output_time_distributions_fix
+
+
 
 drop table if exists time_distr_test_fix;
 create table time_distr_test_fix as
 -- instead of just the block_diff, here the approximated time is computed
 -- this is necessary, because up to block 1009827 (:f) the block-time has been 1 minute
 -- and since its 2 minutes. Therefore the time-difference (which is approximated with block difference) is twice as large.
-select trunc(log(2, greatest(2*(:x - :f), 0) + greatest(:f - :y,0)), :fprecision) as logBlockTime
+-- y = output_block_height
+-- x = spent_block_height
+-- f = fork_height
+-- there are 3 cases:
+-- x > f & y > f: 2(x-y) +   0
+-- x > f & f > y: 2(x-f) + (f-y)
+-- f > x & f > y:    0   + (x-y)
+-- The first two can be combined as follows:
+-- 2(x-MAX(f,y)) + MAX(0,f-y) // first max takes the larger and second expression is 0 if y > f, just like desired
+-- Now combine the 3rd case with this expression to get:
+-- MAX(0,2(x-MAX(f,y))) + MAX(0,MIN(f,x)-y)
+--
+-- Define shortcuts to make formula readable
+\set f 1009827
+\set x spendheight
+\set y (spendheight - block_diff)
+--
+select trunc(log(2,
+	greatest(0,2*(:x-greatest(:f,:y))) + greatest(0,least(:f,:x)-:y)
+), :fprecision) as logBlockTime
 	,	date_trunc('year',spendtime)::date as year
 	,	count(*) as total
 	,	count(case when matched = 'real' then 1 end) as real
@@ -17,21 +38,18 @@ from ringtime
 group by 1,2
 order by 1,2 asc;
 
-
-\set name output_time_distributions_fix
 drop table if exists :name;
 create table :name as 
 with total_yearly as (
 	select *
-	from crosstab($$
-	 select logBlockTime, year, total from time_distr_test_fix order by 1,2
-	$$,$$
-	 select distinct year from time_distr_test_fix order by 1$$) as ct(logBlockTime numeric
-		,total_14 integer
-		,total_15 integer
-		,total_16 integer
-		,total_17 integer
-		,total_18 integer)
+	from crosstab($$select logBlockTime, year, total from time_distr_test_fix order by 1,2$$
+				 ,$$select distinct year from time_distr_test_fix order by 1$$)
+		as ct(logBlockTime numeric
+			,total_14 integer
+			,total_15 integer
+			,total_16 integer
+			,total_17 integer
+			,total_18 integer)
 ), real_yearly as (
 	select * from crosstab($$
 	 select logBlockTime, year, real from time_distr_test_fix order by 1,2
