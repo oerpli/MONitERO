@@ -16,27 +16,8 @@ order by 1,2 asc;
 drop table if exists :name;
 create table :name as 
 with total_yearly as (
-	select logBlockTime
-	,	coalesce(total, 0) as total
-	,	coalesce(real, 0) as real 
-	,	coalesce(mixin, 0) as mixin
-	-- Yearly values for each
-	,	coalesce(total_14, 0) as total_14
-	,	coalesce(total_15, 0) as total_15
-	,	coalesce(total_16, 0) as total_16
-	,	coalesce(total_17, 0) as total_17
-	,	coalesce(total_18, 0) as total_18
-	,	coalesce(real_14, 0) as real_14 
-	,	coalesce(real_15, 0) as real _15
-	,	coalesce(real_16, 0) as real _16
-	,	coalesce(real_17, 0) as real _17
-	,	coalesce(real_18, 0) as real _18
-	,	coalesce(mixin_14, 0) as mixin_14
-	,	coalesce(mixin_15, 0) as mixin_15
-	,	coalesce(mixin_16, 0) as mixin_16
-	,	coalesce(mixin_17, 0) as mixin_17
-	,	coalesce(mixin_18, 0) as mixin_18
-	 from crosstab($$
+	select *
+	from crosstab($$
 	 select logBlockTime, year, total from time_distr_test order by 1,2
 	$$,$$
 	 select distinct year from time_distr_test order by 1$$) as ct(logBlockTime numeric
@@ -73,7 +54,27 @@ with total_yearly as (
 	from time_distr_test
 	group by 1 order by 1 asc
 )
-select *
+select logBlockTime
+	,	coalesce(total, 0) as total
+	,	coalesce(real, 0) as real 
+	,	coalesce(mixin, 0) as mixin
+	-- Yearly values for each
+	,	coalesce(total_14, 0) as total_14
+	,	coalesce(total_15, 0) as total_15
+	,	coalesce(total_16, 0) as total_16
+	,	coalesce(total_17, 0) as total_17
+	,	coalesce(total_18, 0) as total_18
+	,	coalesce(real_14, 0) as real_14 
+	,	coalesce(real_15, 0) as real_15
+	,	coalesce(real_16, 0) as real_16
+	,	coalesce(real_17, 0) as real_17
+	,	coalesce(real_18, 0) as real_18
+	,	coalesce(mixin_14, 0) as mixin_14
+	,	coalesce(mixin_15, 0) as mixin_15
+	,	coalesce(mixin_16, 0) as mixin_16
+	,	coalesce(mixin_17, 0) as mixin_17
+	,	coalesce(mixin_18, 0) as mixin_18
+	
 from total_overall
 natural join total_yearly
 natural join real_yearly

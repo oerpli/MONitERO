@@ -8,7 +8,7 @@ create table time_distr_test_fix as
 -- instead of just the block_diff, here the approximated time is computed
 -- this is necessary, because up to block 1009827 (:f) the block-time has been 1 minute
 -- and since its 2 minutes. Therefore the time-difference (which is approximated with block difference) is twice as large.
-select trunc(log(2, max(2*(:x - :f), 0) + max(:f - :y,0)), :fprecision) as logBlockTime
+select trunc(log(2, greatest(2*(:x - :f), 0) + greatest(:f - :y,0)), :fprecision) as logBlockTime
 	,	date_trunc('year',spendtime)::date as year
 	,	count(*) as total
 	,	count(case when matched = 'real' then 1 end) as real
@@ -22,27 +22,8 @@ order by 1,2 asc;
 drop table if exists :name;
 create table :name as 
 with total_yearly as (
-	select logBlockTime
-	,	coalesce(total, 0) as total
-	,	coalesce(real, 0) as real 
-	,	coalesce(mixin, 0) as mixin
-	-- Yearly values for each
-	,	coalesce(total_14, 0) as total_14
-	,	coalesce(total_15, 0) as total_15
-	,	coalesce(total_16, 0) as total_16
-	,	coalesce(total_17, 0) as total_17
-	,	coalesce(total_18, 0) as total_18
-	,	coalesce(real_14, 0) as real_14 
-	,	coalesce(real_15, 0) as real _15
-	,	coalesce(real_16, 0) as real _16
-	,	coalesce(real_17, 0) as real _17
-	,	coalesce(real_18, 0) as real _18
-	,	coalesce(mixin_14, 0) as mixin_14
-	,	coalesce(mixin_15, 0) as mixin_15
-	,	coalesce(mixin_16, 0) as mixin_16
-	,	coalesce(mixin_17, 0) as mixin_17
-	,	coalesce(mixin_18, 0) as mixin_18
-	 from crosstab($$
+	select *
+	from crosstab($$
 	 select logBlockTime, year, total from time_distr_test_fix order by 1,2
 	$$,$$
 	 select distinct year from time_distr_test_fix order by 1$$) as ct(logBlockTime numeric
@@ -79,12 +60,30 @@ with total_yearly as (
 	from time_distr_test_fix
 	group by 1 order by 1 asc
 )
-select *
+select logBlockTime
+	,	coalesce(total, 0) as total
+	,	coalesce(real, 0) as real 
+	,	coalesce(mixin, 0) as mixin
+	-- Yearly values for each
+	,	coalesce(total_14, 0) as total_14
+	,	coalesce(total_15, 0) as total_15
+	,	coalesce(total_16, 0) as total_16
+	,	coalesce(total_17, 0) as total_17
+	,	coalesce(total_18, 0) as total_18
+	,	coalesce(real_14, 0) as real_14 
+	,	coalesce(real_15, 0) as real_15
+	,	coalesce(real_16, 0) as real_16
+	,	coalesce(real_17, 0) as real_17
+	,	coalesce(real_18, 0) as real_18
+	,	coalesce(mixin_14, 0) as mixin_14
+	,	coalesce(mixin_15, 0) as mixin_15
+	,	coalesce(mixin_16, 0) as mixin_16
+	,	coalesce(mixin_17, 0) as mixin_17
+	,	coalesce(mixin_18, 0) as mixin_18
 from total_overall
 natural join total_yearly
 natural join real_yearly
 natural join mixin_yearly;
-
 
 \set file :outfolder:name'.csv'''
 COPY :name TO :file CSV HEADER DELIMITER E'\t';
