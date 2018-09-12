@@ -1,5 +1,6 @@
 import psycopg2
 import psycopg2.extras
+import sys
 
 from sqlalchemy import create_engine
 import pandas as pd
@@ -7,7 +8,7 @@ import pandas as pd
 def get_cursor():
 	conn_string = "host='localhost' dbname='HintereggerA' user='HintereggerA' password='root'"
 	# print the connection string we will use to connect
-	print("Connecting to database: {}".format(conn_string))
+	print("Connecting to database: {}".format(conn_string), file=sys.stderr)
  	# get a connection, if a connect cannot be made an exception will be raised here
 	conn = psycopg2.connect(conn_string)
  	# conn.cursor will return a cursor object, you can use this cursor to perform queries
