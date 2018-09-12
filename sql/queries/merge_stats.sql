@@ -1,3 +1,4 @@
+\i ../paths.sql
 \set name merge_stats
 -- aggregate over month/day/year/whatever?
 \set granularity month

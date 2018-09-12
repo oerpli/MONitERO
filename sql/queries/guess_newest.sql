@@ -41,5 +41,5 @@ order by 1;
 COMMENT ON TABLE :name is 'Query: Accurracy of guess newest heuristic aggregated by month';
 
 
--- \set file :outfolder:name'.csv'''
--- COPY :name TO :file CSV HEADER DELIMITER E'\t';
+\set file :outfolder:name'.csv'''
+COPY :name TO :file CSV HEADER DELIMITER E'\t';

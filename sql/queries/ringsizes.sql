@@ -1,7 +1,8 @@
 \timing on
 \set granularity month
 -- quoted granularity
-\set q_granularity '''' :granularity ''''
+\set q_granularity '''month'''
+\i ../paths.sql
 
 
 \set name ringsizes
@@ -16,13 +17,13 @@ DROP MATERIALIZED VIEW IF EXISTS :name;
 -- therefore use (*sql*, *cat_sql*) where *cat_sql* is a query that gives all possible columns in a specific order
 CREATE MATERIALIZED VIEW :name AS (
    with avgmedian as ( -- median needed?
-     select date_trunc(:q_granularity,time)::DATE as :granularity
+     select date_trunc('month',time)::DATE as month
       , round(avg(ringsize)::numeric,4) as avg
       , round(avg(effective_ringsize)::numeric,4) as effavg
       , count(*) as total
      from tx join txi using(txid) group by 1
    )
-   select :granularity, avg, effavg,total --! SELECT FOR VIEW IS HERE
+   select month, avg, effavg,total --! SELECT FOR VIEW IS HERE
       ,coalesce(round("ring1"::numeric/total,4),0) as "ring1",coalesce(round("ring2"::numeric/total,4),0) as "ring2"
       ,coalesce(round("ring3"::numeric/total,4),0) as "ring3",coalesce(round("ring4"::numeric/total,4),0) as "ring4"
       ,coalesce(round("ring5"::numeric/total,4),0) as "ring5",coalesce(round("ring6"::numeric/total,4),0) as "ring6"
@@ -37,7 +38,7 @@ CREATE MATERIALIZED VIEW :name AS (
       natural join
       crosstab($$
         with temp as (
-            SELECT  date_trunc(:q_granularity,time)::DATE as :granularity
+            SELECT date_trunc('month',time)::DATE as month
                 , ringBrackets(ringsize) -- n > 10 => 10
                 , count(*)
             FROM tx JOIN txi USING (txid)
@@ -46,14 +47,14 @@ CREATE MATERIALIZED VIEW :name AS (
         select * from temp order by 1,2
     $$,$$ -- this query generates all possible categories (basically numbers from 1 to 10 (inclusive)
       select distinct ringbrackets(ringsize) from txi order by 1 asc$$
-   ) as r(:granularity date
+   ) as r(month date
       ,"ring1" bigint,"ring2" bigint,"ring3" bigint,"ring4" bigint,"ring5" bigint
       ,"ring6" bigint,"ring7" bigint,"ring8" bigint,"ring9" bigint,"ring10" bigint
    )
    natural join
     crosstab($$
         with temp as (
-            SELECT  date_trunc(:q_granularity,time)::DATE as :granularity
+            SELECT  date_trunc('month',time)::DATE as month
                 , ringBrackets(effective_ringsize) -- n > 10 => 10
                 , count(*)
             FROM tx JOIN txi USING (txid)
@@ -62,20 +63,25 @@ CREATE MATERIALIZED VIEW :name AS (
         select * from temp order by 1,2
     $$,$$ -- this query generates all possible categories (basically numbers from 1 to 10 (inclusive)
       select distinct ringbrackets(ringsize) from txi order by 1 asc$$
-   ) as er(:granularity date
+   ) as er(month date
       ,"effring1" bigint,"effring2" bigint,"effring3" bigint,"effring4" bigint,"effring5" bigint
       ,"effring6" bigint,"effring7" bigint,"effring8" bigint,"effring9" bigint,"effring10" bigint
    )
 );
 COMMENT ON MATERIALIZED VIEW :name IS 'Query: Distribution of ringsizes (ring1-10) and effective ringsizes (effring1-10) for each month (x10: >= 10)';
 
+\set file :outfolder:name'.csv'''
+
+-- COPY (select row_number() over() as row,date_part('month', age(month, '2014-04-01')) +12*date_part('year', age(month, '2014-04-01')) as age, * from :name) TO :file CSV HEADER DELIMITER E'\t';
+
+COPY (select * from :name) TO :file CSV HEADER DELIMITER E'\t';
 
 
 \set name ringsizes_nontrivial
 DROP MATERIALIZED VIEW IF EXISTS :name;
 CREATE MATERIALIZED VIEW :name AS (
    with avgmedian as ( -- median needed?
-     select date_trunc(:q_granularity,time)::DATE as :granularity
+     select date_trunc('month',time)::DATE as month
       , round(avg(ringsize)::numeric,4) as avg
       , round(avg(effective_ringsize)::numeric,4) as effavg
       , count(*) as total
@@ -83,7 +89,7 @@ CREATE MATERIALIZED VIEW :name AS (
      where ringsize > 1
      group by 1
    )
-   select :granularity, avg, effavg,total --! SELECT FOR VIEW IS HERE
+   select month, avg, effavg,total --! SELECT FOR VIEW IS HERE
       ,coalesce(round("ring1"::numeric/total,4),0) as "ring1",coalesce(round("ring2"::numeric/total,4),0) as "ring2"
       ,coalesce(round("ring3"::numeric/total,4),0) as "ring3",coalesce(round("ring4"::numeric/total,4),0) as "ring4"
       ,coalesce(round("ring5"::numeric/total,4),0) as "ring5",coalesce(round("ring6"::numeric/total,4),0) as "ring6"
@@ -98,7 +104,7 @@ CREATE MATERIALIZED VIEW :name AS (
       natural join
       crosstab($$
         with temp as (
-            SELECT  date_trunc(:q_granularity,time)::DATE as :granularity
+            SELECT  date_trunc('month',time)::DATE as month
                 , ringBrackets(ringsize) -- n > 10 => 10
                 , count(*)
             FROM tx JOIN txi USING (txid)
@@ -108,14 +114,14 @@ CREATE MATERIALIZED VIEW :name AS (
         select * from temp order by 1,2
     $$,$$ -- this query generates all possible categories (basically numbers from 1 to 10 (inclusive)
       select distinct ringbrackets(ringsize) from txi order by 1 asc$$
-   ) as r(:granularity date
+   ) as r(month date
       ,"ring1" bigint,"ring2" bigint,"ring3" bigint,"ring4" bigint,"ring5" bigint
       ,"ring6" bigint,"ring7" bigint,"ring8" bigint,"ring9" bigint,"ring10" bigint
    )
    natural join
     crosstab($$
         with temp as (
-            SELECT date_trunc(:q_granularity,time)::DATE as :granularity
+            SELECT date_trunc('month',time)::DATE as month
                 , ringBrackets(effective_ringsize) -- n > 10 => 10
                 , count(*)
             FROM tx JOIN txi USING (txid)
@@ -125,9 +131,16 @@ CREATE MATERIALIZED VIEW :name AS (
         select * from temp order by 1,2
     $$,$$ -- this query generates all possible categories (basically numbers from 1 to 10 (inclusive)
       select distinct ringbrackets(ringsize) from txi order by 1 asc$$
-   ) as er(:granularity date
+   ) as er(month date
       ,"effring1" bigint,"effring2" bigint,"effring3" bigint,"effring4" bigint,"effring5" bigint
       ,"effring6" bigint,"effring7" bigint,"effring8" bigint,"effring9" bigint,"effring10" bigint
    )
 );
 COMMENT ON MATERIALIZED VIEW :name IS 'Query: Distribution of ringsizes (ring1-10) and effective ringsizes (effring1-10) of nontrivial TXs (rs>1) for each month (ring10: ringsize >= 10)'; 
+
+
+\set file :outfolder:name'.csv'''
+\echo :file
+-- COPY (select row_number() over() as row,date_part('month', age(month, '2014-04-01')) +12*date_part('year', age(month, '2014-04-01')) as age, * from :name) TO :file CSV HEADER DELIMITER E'\t';
+
+COPY (select * from :name) TO :file CSV HEADER DELIMITER E'\t';

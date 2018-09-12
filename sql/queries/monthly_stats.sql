@@ -49,6 +49,5 @@ order by :granularity asc
 );
 COMMENT ON TABLE :name IS 'Monthly TX stats, output and input stats exclude coinbase TXs. Details in .sql file';
 
-
--- \set file :outfolder:name'.csv'''
--- COPY :name TO :file CSV HEADER DELIMITER E'\t';
+\set file :outfolder:name'.csv'''
+COPY :name TO :file CSV HEADER DELIMITER E'\t';
