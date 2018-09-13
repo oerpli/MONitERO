@@ -42,9 +42,9 @@ def queryList():
     queries += [("XMRDATEF","select time::date from tx where block = 1")]
     queries += [("XMODATEF","select min(time)::date from xmo_tx")]
     queries += [("XMVDATEF","select min(time)::date from xmv_tx")]
-    queries += [("XMRDATEL","select max(time) from tx where time < '2018-09-01' ")]
-    queries += [("XMODATEL","select max(time) from xmo_tx where time < '2018-09-01' ")]
-    queries += [("XMVDATEL","select max(time) from xmv_tx where time < '2018-09-01' ")]
+    queries += [("XMRDATEL","select max(time)::date from tx where time < '2018-09-01' ")]
+    queries += [("XMODATEL","select max(time)::date from xmo_tx where time < '2018-09-01' ")]
+    queries += [("XMVDATEL","select max(time)::date from xmv_tx where time < '2018-09-01' ")]
     queries += [("XMOFORK","select {}".format(omin_xmr-1))]
     queries += [("XMVFORK","select {}".format(vmin_xmr-1))]
     queries += [("XMRFIRST","select 1")]
@@ -174,7 +174,7 @@ def queryList():
     queries += [("recentrm","select count(*) from tx join txi using(txid) join ring using(inid) where time between '{}' and '{}'".format(ra,rb))]
 
     queries += [("recenttotalnf","select count(*) from tx join txi using(txid) join ring_pre_fork using(inid) where (matched = 'mixin' or matched = 'real') and time between '{}' and '{}'".format(ra,rb))]
-    queries += [("recentrings","select count(*) from tx join txi using(txid) where time between '{}' and '{}'".format(ra,rb))]
+    queries += [("recentrings","select count(*) from tx join txi using(txid) where ringsize > 1 and time between '{}' and '{}'".format(ra,rb))]
     queries += [("recenttxnoncb","select count(*) from tx where not coinbase and time between '{}' and '{}'".format(ra,rb))]
     queryGroups.append((name,queries.copy()))
 
