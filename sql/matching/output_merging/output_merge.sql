@@ -36,20 +36,3 @@ SET matched_merge = 'real'
 FROM output_merge o
 WHERE (r.inid = inid_a and r.outid = outid_a)
  OR (r.inid = inid_b and r.outid = outid_b);
-
----- No idea what the purpose of this has been:
--- DROP TABLE IF EXISTS :name;
--- CREATE TABLE :name AS (
---     select a.txidin as txid
---         , a.inid as ain
---         , b.inid as bin
---         , unnest(a.txos & b.txos) as tx_overlap
---         , a.outids as aout
---         , b.outids as bout
---     from output_merge as a
---     join output_merge as b
---         on a.inid < b.inid
---         and a.txidin = b.txidin
---         and a.txos && b.txos
--- );
--- COMMENT ON TABLE :name IS 'Query: TXs that reference same TX in multiple inputs'; -- PLEASE FILL OUT TO PREVENT CONFUSION
