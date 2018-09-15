@@ -6,7 +6,10 @@ To prevent the sampling of spent outputs as decoys, the blackballing tool (relea
 
 ## Blackball database:
 In June 2018, I've compiled a list of outputs which should be avoided, which can be obtained by following the links below.
-Though I would recommend using the database published by [Justin Ehrenhofer](https://twitter.com/JEhrenhofer), which is available here: https://monero-blackball.github.io/monero-blackball-site/
+Though I would recommend using the database published by [Justin Ehrenhofer](https://twitter.com/JEhrenhofer), which is available here: 
+
+https://monero-blackball.github.io/monero-blackball-site/
+
 It is more complete (more recently updated and also incorporates some information from Mining Payouts, in contrast to my work, which is only based on data from the blockchain.
 
 Still, here links to the provably spent outputs between April 2014 and June 8th 2018:
