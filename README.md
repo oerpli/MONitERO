@@ -1,5 +1,8 @@
 # MONitERO [![DOI: 10.5281/zenodo.1284428](https://zenodo.org/badge/DOI/10.5281/zenodo.1284428.svg)](https://doi.org/10.5281/zenodo.1284428)
-Various pgsql scripts to monitor the Monero blockchain.
+This toolchain was developed as part of my second Master's thesis, the results of which can be found in the [PDF folder](https://github.com/oerpli/MONitERO/tree/master/pdfs) in this repository.
+Due to pending peer review, currently only the poster is published. 
+
+The toolchain consists of various pgsql scripts to monitor the Monero blockchain.
 Mostly useful if you plan to create a blackball database (more on that below) or calculate some metrics concerning Monero transactions and you would like to use (PG)SQL for that purpose.
 
 If you only want a blackball database, follow [this link](https://github.com/oerpli/MONitERO/blob/master/csv/tx_spent.md).
@@ -127,5 +130,8 @@ These are mostly not in the repo right now as I've changed my plot-generation-pi
 ## Is it any good?
 Yes
 
-## I have questions/concerns/other
+## Questions/concerns/other
 You can contact me or open an issue. If you find some bug/oversight before my thesis is finished you will not only help Science™, but you may even get a mention in my acknowledgements!
+
+## How to cite
+If you want to use this work for some scientific work, use the DOI provided in the header for the time being.
