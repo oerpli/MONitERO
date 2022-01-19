@@ -1,6 +1,11 @@
 # MONitERO [![DOI: 10.5281/zenodo.1284428](https://zenodo.org/badge/DOI/10.5281/zenodo.1284428.svg)](https://doi.org/10.5281/zenodo.1284428)
 This toolchain was developed as part of my second Master's thesis, the results of which can be found in the [PDF folder](https://github.com/oerpli/MONitERO/tree/master/pdfs) in this repository.
-Due to pending peer review, currently only the poster is published. 
+Due to pending peer review, currently only the poster is published (update: now available, see links below)
+
+- Short paper
+  - Preprint https://arxiv.org/abs/1812.02808
+  - Published paper https://link.springer.com/chapter/10.1007/978-3-030-32101-7_10
+- Full thesis: https://www.ac.tuwien.ac.at/files/pub/hinteregger_18.pdf
 
 The toolchain consists of various pgsql scripts to monitor the Monero blockchain.
 Mostly useful if you plan to create a blackball database (more on that below) or calculate some metrics concerning Monero transactions and you would like to use (PG)SQL for that purpose.
@@ -8,7 +13,7 @@ Mostly useful if you plan to create a blackball database (more on that below) or
 If you only want a blackball database, follow [this link](https://github.com/oerpli/MONitERO/blob/master/csv/tx_spent.md).
 
 ## WTF is a blackball?
-Monero transactions use other inputs to hide the real inputs spent in transactions. Over the years, [several](https://arxiv.org/abs/1704.04299) [researchers](https://www.researchgate.net/publication/319071434_A_Traceability_Analysis_of_Monero%27s_Blockchain) have found, that some transaction outputs are definitely spent and therefore can be removed from rings, reducing the anonymity set of the affected transaction. 
+Monero transactions use other inputs to hide the real inputs spent in transactions. Over the years [several](https://arxiv.org/abs/1704.04299) [researchers](https://www.researchgate.net/publication/319071434_A_Traceability_Analysis_of_Monero%27s_Blockchain) have found that some transaction outputs are definitely spent and therefore can be removed from rings, reducing the anonymity set of the affected transaction. 
 
 For this purpose the Monero community developed a tool which is distributed with [Monero as of v.0.12](https://github.com/monero-project/monero/releases/tag/v0.12.0.0).
 Using this tool, one could prevent the sampling of known spent transactions as mixins for newly created transaction.
